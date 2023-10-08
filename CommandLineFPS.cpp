@@ -77,6 +77,56 @@ int main() {
                 fPlayerY += cosf(fPlayerA) * fSpeed * fElapsedTime;;
             }
         }
+
+        for (int x = 0; x  < nScreenWidth; x++) {
+            float fRayAngle = (fPlayerA - fFOV/2.0f) + ((float)x / (float)nScreenWidth) * fFOV;
+
+            float fStepSize = 0.1f;
+            float fDistanceToWall = 0.0f;
+
+            bool bHitWall = false;
+            bool bBoundary = false;
+
+            float fEyeX = sinf(fRayAngle);
+            float fEyeY = cosf(fRayAngle);
+
+            while (!bHitWall && fDistanceToWall < fDepth) {
+                fDistanceToWall += fStepSize;
+                int nTestX = (int)(fPlayerX + fEyeX * fDistanceToWall);
+                int nTestY = (int)(fPlayerY + fEyeY * fDistanceToWall);
+
+                if (nTestX < 0 || nTestX >= nMapWidth || nTestY < 0 || nTestY > nMapHeight) {
+                    bHitWall = true;
+                    fDistanceToWall = fDepth;
+                }
+                else {
+                    if (map.c_str()[nTestX * nMapWidth + nTestY] == '#') {
+                        bHitWall = true;
+
+                        vector<pair<float, float>> p;
+                        
+                        for (int tx = 0; tx < 2; tx++)
+                            for (int ty = 0; ty < 2; ty++) {
+                                float vy = (float)nTestY + ty - fPlayerY;
+                                float vx = (float)nTestX + tx - fPlayerX;
+                                float d = sqrt(vx*vx + vy*vy);
+                                float dot = (fEyeX * vx / d) + (fEyeY * vy / d);
+                                p.push_back(make_pair(d, dot));
+                            }
+
+                        sort(p.begin(), p.end, [](const pair<float, float> &left, const pair<float, float> &right) {return left.first <right.first;});
+
+                        float fBound = 0.01;
+						if (acos(p.at(0).second) < fBound) bBoundary = true;
+						if (acos(p.at(1).second) < fBound) bBoundary = true;
+						if (acos(p.at(2).second) < fBound) bBoundary = true;
+
+                    }
+                }
+    
+            }
+
+        }
         
 
     }
