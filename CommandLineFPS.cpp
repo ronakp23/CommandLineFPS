@@ -1,11 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <algorithm>
 #include <chrono>
-using namespace std;
 
 #include <stdio.h>
 #include <Windows.h>
+#include <cmath>
+
+using namespace std;
 
 int nScreenWidth = 120;
 int nScreenHeight = 40;
@@ -21,27 +24,27 @@ float fSpeed = 5.0f;
 
 int main() {
     wchar_t *screen = new wchar_t[nScreenWidth*nScreenHeight];
-	HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-	SetConsoleActiveScreenBuffer(hConsole);
-	DWORD dwBytesWritten = 0;
+        HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+        SetConsoleActiveScreenBuffer(hConsole);
+        DWORD dwBytesWritten = 0;
 
     wstring map;
-	map += L"#########.......";
-	map += L"#...............";
-	map += L"#.......########";
-	map += L"#..............#";
-	map += L"#....###.......#";
-	map += L"###............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#......####..###";
-	map += L"#......#.......#";
-	map += L"#......#.......#";
-	map += L"#..............#";
-	map += L"####...#########";
-	map += L"#..............#";
-	map += L"################";
+        map += L"#########.......";
+        map += L"#...............";
+        map += L"#.......########";
+        map += L"#..............#";
+        map += L"#....###.......#";
+        map += L"###............#";
+        map += L"#..............#";
+        map += L"#..............#";
+        map += L"#..............#";
+        map += L"#......####..###";
+        map += L"#......#.......#";
+        map += L"#......#.......#";
+        map += L"#..............#";
+        map += L"####...#########";
+        map += L"#..............#";
+        map += L"################";
 
     auto tp1 = chrono::system_clock::now();
     auto tp2 = chrono::system_clock::now();
@@ -114,7 +117,7 @@ int main() {
                                 p.push_back(make_pair(d, dot));
                             }
 
-                        sort(p.begin(), p.end, [](const pair<float, float> &left, const pair<float, float> &right) {return left.first <right.first;});
+                        sort(p.begin(), p.end(), [](const pair<float, float> &left, const pair<float, float> &right) {return left.first <right.first;});
 
                         float fBound = 0.01;
 						if (acos(p.at(0).second) < fBound) bBoundary = true;
@@ -163,6 +166,9 @@ int main() {
 
 
         }
+
+        screen[nScreenWidth * nScreenHeight - 1] = '\0';
+		WriteConsoleOutputCharacterW(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
         
 
     }
